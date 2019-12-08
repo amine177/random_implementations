@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 
 #define LOR(X, N) (((X) << (N)) | ((X) >> (32  - N)))
@@ -10,11 +11,11 @@
 #define H(X, Y, Z) ((X) ^ (Y) ^ (Z))
 #define I(X, Y, Z) ((Y) ^ ((X) | (~Z)))
 
-int padString(u_int8_t*, u_int8_t**);
-int md5(u_int8_t*, u_int8_t**);
+int padString(uint8_t*, uint8_t**);
+int md5(uint8_t*, uint8_t**);
 
-int main(int argc, u_int8_t* argv[argc + 1]) {
-  u_int8_t* hash;
+int main(int argc, uint8_t* argv[argc + 1]) {
+  uint8_t* hash;
   int n;
   if (argc < 2) {
     printf("usage: md5 string\n");
@@ -22,8 +23,8 @@ int main(int argc, u_int8_t* argv[argc + 1]) {
   }
 
 
-  u_int32_t inputLength = strlen(argv[1]);
-  u_int8_t* input = (u_int8_t*) malloc(sizeof(u_int8_t) * (inputLength + 1));
+  uint32_t inputLength = strlen(argv[1]);
+  uint8_t* input = (uint8_t*) malloc(sizeof(uint8_t) * (inputLength + 1));
   if (inputLength > 0) {
     strncpy(input, argv[1], inputLength);
     input[inputLength] = '\0';
@@ -44,18 +45,18 @@ int main(int argc, u_int8_t* argv[argc + 1]) {
   return 0;
 }
 
-int md5(u_int8_t* s, u_int8_t** hash) {
-  u_int8_t* padded;
-  u_int32_t* X;
-  u_int64_t n;
-  u_int32_t T[64];
-  u_int32_t temp;
-  u_int32_t A = 0x67452301;
-  u_int32_t B = 0xefcdab89;
-  u_int32_t C = 0x98badcfe;
-  u_int32_t D = 0x10325476;
-  u_int32_t AA, BB, CC, DD;
-  u_int32_t S[] = {
+int md5(uint8_t* s, uint8_t** hash) {
+  uint8_t* padded;
+  uint32_t* X;
+  uint64_t n;
+  uint32_t T[64];
+  uint32_t temp;
+  uint32_t A = 0x67452301;
+  uint32_t B = 0xefcdab89;
+  uint32_t C = 0x98badcfe;
+  uint32_t D = 0x10325476;
+  uint32_t AA, BB, CC, DD;
+  uint32_t S[] = {
     7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
     5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
     4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
@@ -68,7 +69,7 @@ int md5(u_int8_t* s, u_int8_t** hash) {
 
   n = padString(s, &padded);
   for (int i = 0; i < n/64; i++) {
-      X = (u_int32_t*) (padded+i*64);
+      X = (uint32_t*) (padded+i*64);
     AA = A;
     BB = B;
     CC = C;
@@ -105,25 +106,25 @@ int md5(u_int8_t* s, u_int8_t** hash) {
   }
 
 
-  *hash = (u_int8_t*)malloc(sizeof(u_int8_t)*16);
-  u_int8_t* p;
+  *hash = (uint8_t*)malloc(sizeof(uint8_t)*16);
+  uint8_t* p;
 
-  p = (u_int8_t*) &A;
+  p = (uint8_t*) &A;
   (*hash)[0] = p[0];
   (*hash)[1] = p[1];
   (*hash)[2] = p[2];
   (*hash)[3] = p[3];
-  p = (u_int8_t*) &B;
+  p = (uint8_t*) &B;
   (*hash)[4] = p[0];
   (*hash)[5] = p[1];
   (*hash)[6] = p[2];
   (*hash)[7] = p[3];
-  p = (u_int8_t*) &C;
+  p = (uint8_t*) &C;
   (*hash)[8] = p[0];
   (*hash)[9] = p[1];
   (*hash)[10] = p[2];
   (*hash)[11] = p[3];
-  p = (u_int8_t*) &D;
+  p = (uint8_t*) &D;
   (*hash)[12] = p[0];
   (*hash)[13] = p[1];
   (*hash)[14] = p[2];
@@ -131,22 +132,22 @@ int md5(u_int8_t* s, u_int8_t** hash) {
   return 0;
 }
 
-int padString(u_int8_t* s, u_int8_t** targetstr) {
-  u_int16_t pad;
-  u_int64_t length = strlen(s);
-  u_int8_t* newstr = NULL;
-  u_int64_t n = strlen(s);
+int padString(uint8_t* s, uint8_t** targetstr) {
+  uint16_t pad;
+  uint64_t length = strlen(s);
+  uint8_t* newstr = NULL;
+  uint64_t n = strlen(s);
   if (n % 64 < 56)
     pad = 56 - n % 64;
   else
     pad =  120 - n % 64;
   if (pad > 0) {
-    newstr = (u_int8_t*) malloc(sizeof(u_int8_t) * (n  + 9 + pad));
+    newstr = (uint8_t*) malloc(sizeof(uint8_t) * (n  + 9 + pad));
     strncpy(newstr, s, n);
     newstr[n] = 128;
     for (int j = 1; j < pad; j++)
       newstr[n + j] = 0;
-    *(u_int64_t*)(newstr + n + pad) = (u_int64_t) length * 8;
+    *(uint64_t*)(newstr + n + pad) = (uint64_t) length * 8;
   }
   *targetstr = newstr;
   (*targetstr)[n + 9 + pad] = 0x0;
